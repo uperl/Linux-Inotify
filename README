@@ -1,0 +1,25 @@
+NAME
+
+Linux::Inotify - A perl interface to the new inotify API of Linux
+                 kernel >= 2.6.13rc3
+
+ABOUT
+
+ Inotify supports the new inotify interface of Linux which is a replacement of
+ dnotify. Beside the class Inotify there two helper classes -- Inotify::Watch
+ and Inotify::Event.
+
+SYNOPSIS
+
+ use Linux::Inotify;
+
+AUTHOR
+
+ Torsten Werner <twerner@debian.org>
+
+COPYRIGHT AND LICENSE
+
+ Copyright (c) 2005 Torsten Werner
+
+ All rights reserved.  You can redistribute and/or modify
+ this bundle under the same terms as Perl itself.
