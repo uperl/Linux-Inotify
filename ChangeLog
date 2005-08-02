@@ -1,3 +1,9 @@
+2005-08-02  Torsten Werner <twerner@debian.org>
+
+	* version 0.02
+	* added 2 tests
+	* create README automatically
+
 2005-07-18  Torsten Werner <twerner@debian.org>
 
 	* initial version 0.01
