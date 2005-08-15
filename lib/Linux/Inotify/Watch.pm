@@ -7,42 +7,32 @@ require 'syscall.ph';
 
 push our @CARP_NOT, 'Linux::Inotify';
 
-my %all_watches;
-
 sub new($$$$) {
    my $class = shift;
-   my %self = (
-      fd    => shift,
-      name  => shift,
-      mask  => shift,
-      valid => 1
-   );
-   $self{wd} = syscall 292, $self{fd}->{fd}, $self{name}, $self{mask};
-   croak "Linux::Inotify::Watch::new() failed: $!" if $self{wd} == -1;
-   bless \%self, $class;
-   $all_watches{$self{wd}} = \%self;
-   return \%self;
+   my $self = {
+      notifier => shift,
+      name     => shift,
+      mask     => shift,
+      valid    => 1
+   };
+   $self->{wd} =
+      syscall 292, $self->{notifier}->{fd}, $self->{name}, $self->{mask};
+   croak "Linux::Inotify::Watch::new() failed: $!" if $self->{wd} == -1;
+   return bless $self, $class;
 }
 
 sub clone($$) {
    my $source = shift;
-   my %target = (
-      fd    => $source->{fd},
-      name  => shift,
-      mask  => $source->{mask},
-      valid => 1
-   );
-   $target{wd} = syscall 292, $target{fd}->{fd}, $target{name}, $target{mask};
-   croak "Linux::Inotify::Watch::new() failed: $!" if $target{wd} == -1;
-   bless \%target, ref($source);
-   $all_watches{$target{wd}} = \%target;
-   return \%target;
-}
-
-sub find($$) {
-   my $class = shift;
-   my $wd = shift;
-   return $all_watches{$wd};
+   my $target = {
+      notifier => $source->{notifier},
+      name     => shift,
+      mask     => $source->{mask},
+      valid    => 1
+   };
+   $target->{wd} =
+      syscall 292, $target->{notifier}->{fd}, $target->{name}, $target->{mask};
+   croak "Linux::Inotify::Watch::new() failed: $!" if $target->{wd} == -1;
+   return bless $target, ref($source);
 }
 
 sub invalidate($) {
@@ -53,10 +43,11 @@ sub invalidate($) {
 sub remove($) {
    my $self = shift;
    if ($self->{valid}) {
-      my $ret = syscall 293, $self->{fd}->{fd}, $self->{wd};
-      croak "Linux::Inotify::Watch::remove(wd = $self->{wd}) failed: $!" if $ret == -1;
+      $self->invalidate;
+      my $ret = syscall 293, $self->{notifier}->{fd}, $self->{wd};
+      croak "Linux::Inotify::Watch::remove(wd = $self->{wd}) failed: $!" if
+	 $ret == -1;
    }
-   delete $all_watches{$self->{wd}};
 }
 
 1;

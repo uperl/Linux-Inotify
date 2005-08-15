@@ -1,3 +1,9 @@
+2005-08-15  Torsten Werner <twerner@debian.org>
+
+	* version 0.03
+	* removed global hash %all_watches
+	* refactoring
+
 2005-08-02  Torsten Werner <twerner@debian.org>
 
 	* version 0.02

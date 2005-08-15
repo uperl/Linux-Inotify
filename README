@@ -30,7 +30,7 @@ DESCRIPTION
 
        $notifier->close();
 
-    destroys the notifier.
+    destroys the notifier and closes the associated file descriptor.
 
   class Linux::Inotify::Watch
     The constructor new is usually not called directly but via the add_watch

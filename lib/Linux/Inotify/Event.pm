@@ -3,35 +3,30 @@ package Linux::Inotify::Event;
 use strict;
 use warnings;
 
-sub new($$) {
+sub new($$$) {
    my $class = shift;
+   my $notifier = shift;
    my $raw_event = shift;
-   my %event;
-   ($event{wd}, $event{mask}, $event{cookie}, $event{len}) =
+   my $self = { notifier => $notifier };
+   (my $wd, $self->{mask}, $self->{cookie}, $self->{len}) =
       unpack 'iIII', $raw_event;
-   $event{name} = unpack 'Z*', substr($raw_event, 16, $event{len});
-   bless \%event, $class;
+   $self->{watch} = $notifier->find($wd);
+   $self->{name} = unpack 'Z*', substr($raw_event, 16, $self->{len});
    use Linux::Inotify;
-   if ($event{mask} & Linux::Inotify::DELETE_SELF) {
-      use Linux::Inotify::Watch;
-      my $watch = Linux::Inotify::Watch->find($event{wd});
-      $watch->invalidate();
+   if ($self->{mask} & Linux::Inotify::DELETE_SELF) {
+      $self->{watch}->invalidate();
    }
-   return \%event;
+   return bless $self, $class;
 }
 
 sub fullname($) {
    my $self = shift;
-   use Linux::Inotify::Watch;
-   my $watch = Linux::Inotify::Watch->find($self->{wd});
-   return $watch->{name} . '/' . $self->{name};
+   return $self->{watch}->{name} . '/' . $self->{name};
 }
 
 sub add_watch($) {
    my $self = shift;
-   use Linux::Inotify::Watch;
-   my $watch = Linux::Inotify::Watch->find($self->{wd});
-   return $watch->clone($self->fullname());
+   return $self->{watch}->clone($self->fullname());
 }
 
 my %reverse;
@@ -62,9 +57,9 @@ INIT {
 
 sub print(%) {
    my $self = shift;
-   printf "wd: %d, %21s, cookie: 0x%08x, len: %3d, name: '%s'\n",
-      $self->{wd}, $reverse{$self->{mask}}, $self->{cookie}, $self->{len},
-      $self->fullname();
+   printf "fd: %d, wd: %d, %21s, cookie: 0x%08x, len: %3d, name: '%s'\n",
+      $self->{notifier}->{fd}, $self->{watch}->{wd}, $reverse{$self->{mask}},
+      $self->{cookie}, $self->{len}, $self->fullname();
 }
 
 1;

@@ -1,5 +1,5 @@
 package Linux::Inotify;
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =pod
 
@@ -38,7 +38,7 @@ Linux::Inotify::Event objects (see below).
 
    $notifier->close();
 
-destroys the notifier.
+destroys the notifier and closes the associated file descriptor.
 
 =head2 class Linux::Inotify::Watch
 
@@ -95,22 +95,32 @@ require 'syscall.ph';
 
 sub new($) {
    my $class = shift;
-   my %self = (
+   my $self = {
       fd => syscall 291
-   );
-   croak "Linux::Inotify::init() failed: $!" if $self{fd} == -1;
-   bless \%self, $class;
-   return \%self;
+   };
+   croak "Linux::Inotify::init() failed: $!" if $self->{fd} == -1;
+   return bless $self, $class;
 }
 
 sub add_watch($$$) {
    my $self = shift;
    use Linux::Inotify::Watch;
-   return Linux::Inotify::Watch->new($self, @_);
+   my $watch = Linux::Inotify::Watch->new($self, @_);
+   $self->{wd}->{$watch->{wd}} = $watch;
+   return $watch;
+}
+
+sub find($$) {
+   my $self = shift;
+   my $wd = shift;
+   return $self->{wd}->{$wd};
 }
 
 sub close($) {
    my $self = shift;
+   for my $watch (values %{$self->{wd}}) {
+      $watch->remove;
+   }
    my $ret = POSIX::close($self->{fd});
    croak "Linux::Inotify::close() failed: $!" unless defined $ret;
 }
@@ -144,7 +154,7 @@ sub read($) {
    my @all_events;
    do {
       use Linux::Inotify::Event;
-      my $event = Linux::Inotify::Event->new($raw_events);
+      my $event = Linux::Inotify::Event->new($self, $raw_events);
       push @all_events, $event;
       $raw_events = substr($raw_events, 16 + $event->{len});
    } while(length $raw_events >= 16);
