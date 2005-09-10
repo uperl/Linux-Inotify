@@ -1,5 +1,5 @@
 package Linux::Inotify;
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 =pod
 
@@ -91,12 +91,46 @@ use strict;
 use warnings;
 use Carp;
 use POSIX;
-require 'syscall.ph';
+use Config;
+
+my %syscall_init = (
+   alpha     => 444,
+   arm       => 316,
+   i386      => 291,
+   ia64      => 1277,
+   powerpc   => 275,
+   powerpc64 => 275,
+   s390      => 284,
+   sh        => 290,
+   sparc     => 151,
+   sparc_64  => 151,
+   x86_64    => 253,
+);
+my ($arch) = ($Config{archname} =~ m{([^-]+)-});
+die "unsupported architecture: $arch\n" unless exists $syscall_init{$arch};
+
+sub syscall_init {
+   syscall $syscall_init{$arch};
+}
+
+sub syscall_add_watch {
+   syscall $syscall_init{$arch} + 1, @_;
+}
+
+sub syscall_rm_watch {
+   unless ($arch =~ m{sparc}) {
+      syscall $syscall_init{$arch} + 2, @_;
+   }
+   else {
+      # that's my favourite syscall:
+      syscall $syscall_init{$arch} + 5, @_;
+   }
+}
 
 sub new($) {
    my $class = shift;
    my $self = {
-      fd => syscall 291
+      fd => syscall_init
    };
    croak "Linux::Inotify::init() failed: $!" if $self->{fd} == -1;
    return bless $self, $class;

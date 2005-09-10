@@ -3,7 +3,6 @@ package Linux::Inotify::Watch;
 use strict;
 use warnings;
 use Carp;
-require 'syscall.ph';
 
 push our @CARP_NOT, 'Linux::Inotify';
 
@@ -15,8 +14,9 @@ sub new($$$$) {
       mask     => shift,
       valid    => 1
    };
-   $self->{wd} =
-      syscall 292, $self->{notifier}->{fd}, $self->{name}, $self->{mask};
+   use Linux::Inotify;
+   $self->{wd} = Linux::Inotify::syscall_add_watch($self->{notifier}->{fd},
+      $self->{name}, $self->{mask});
    croak "Linux::Inotify::Watch::new() failed: $!" if $self->{wd} == -1;
    return bless $self, $class;
 }
@@ -29,8 +29,9 @@ sub clone($$) {
       mask     => $source->{mask},
       valid    => 1
    };
-   $target->{wd} =
-      syscall 292, $target->{notifier}->{fd}, $target->{name}, $target->{mask};
+   use Linux::Inotify;
+   $target->{wd} = Linux::Inotify::syscall_add_watch($target->{notifier}->{fd},
+      $target->{name}, $target->{mask});
    croak "Linux::Inotify::Watch::new() failed: $!" if $target->{wd} == -1;
    return bless $target, ref($source);
 }
@@ -44,7 +45,9 @@ sub remove($) {
    my $self = shift;
    if ($self->{valid}) {
       $self->invalidate;
-      my $ret = syscall 293, $self->{notifier}->{fd}, $self->{wd};
+      use Linux::Inotify;
+      my $ret = Linux::Inotify::syscall_rm_watch($self->{notifier}->{fd},
+	 $self->{wd});
       croak "Linux::Inotify::Watch::remove(wd = $self->{wd}) failed: $!" if
 	 $ret == -1;
    }
