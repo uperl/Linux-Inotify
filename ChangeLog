@@ -1,3 +1,8 @@
+2007-09-19  Torsten Werner <twerner@debian.org>
+
+	* version 0.05
+	* apply a patch from Lamont Granquist to fix constant ALL_EVENTS
+
 2005-09-10  Torsten Werner <twerner@debian.org>
 
 	* version 0.04

@@ -1,5 +1,5 @@
 package Linux::Inotify;
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 =pod
 
@@ -178,7 +178,7 @@ use constant {
    ONESHOT       => 0x80000000,
    CLOSE         => 0x00000018,
    MOVE          => 0x000000c0,
-   ALL_EVENTS    => 0xffffffff
+   ALL_EVENTS    => 0x00000fff
 };
 
 sub read($) {

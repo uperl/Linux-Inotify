@@ -1,6 +1,6 @@
 ---
 name: Linux-Inotify
-version: 0.04
+version: 0.05
 author:
   - |-
     Copyright 2005 by Torsten Werner <twerner@debian.org>. The code is licensed
@@ -14,7 +14,7 @@ requires:
 provides:
   Linux::Inotify:
     file: lib/Linux/Inotify.pm
-    version: 0.04
+    version: 0.05
   Linux::Inotify::Event:
     file: lib/Linux/Inotify/Event.pm
   Linux::Inotify::Watch:
