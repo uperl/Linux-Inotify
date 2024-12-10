@@ -111,45 +111,31 @@ use constant CLOSE         => 0x00000018;
 use constant MOVE          => 0x000000c0;
 use constant ALL_EVENTS    => 0x00000fff;
 
-my %syscall_init = (
-   aarch64   => 26,
-   alpha     => 444,
-   arm       => 316,
-   i386      => 291,
-   i486      => 291,
-   i586      => 291,
-   i686      => 291,
-   ia64      => 1277,
-   powerpc   => 275,
-   powerpc64 => 275,
-   s390      => 284,
-   sh        => 290,
-   sparc     => 151,
-   sparc_64  => 151,
-   x86_64    => 253,
-);
-my ($arch) = ($Config{archname} =~ m{([^-]+)-});
-die "unsupported architecture: $arch\n" unless exists $syscall_init{$arch};
-
-sub syscall_init {
-   # some newer Linux do not have inotify_init, and just inotify_init1
-   # which takes a single argument.  inotify_init1(0) is the same as
-   # inotify_init().
-   syscall $syscall_init{$arch}, 0;
+sub _arch_config {
+   my ($arch) = ($Config{archname} =~ m{([^-]+)-});
+   return (253,254,255)      if $arch eq 'x86_64';
+   return (26, 27, 28, 0)    if $arch eq 'aarch64';
+   return (151, 152, 156)    if $arch =~ /^sparc(_64|)\z/;
+   return (444, 445, 446)    if $arch eq 'alpha';
+   return (291, 292, 293)    if $arch =~ /^i[3456]86\z/;
+   return (1277, 1278, 1279) if $arch eq 'ia64';
+   return (275, 276, 277)    if $arch =~ /^powerpc(|64)\z/;
+   return (284, 285, 296)    if $arch eq 's390';
+   die "do not know syscalls for inotify on $arch";
 }
 
-sub syscall_add_watch {
-   syscall $syscall_init{$arch} + 1, @_;
-}
+sub syscall_init;
+sub syscall_add_watch;
+sub syscall_rm_watch;
 
-sub syscall_rm_watch {
-   unless ($arch =~ m{sparc}) {
-      syscall $syscall_init{$arch} + 2, @_;
+if(my($init, $add, $remove, @init_args) = _arch_config()) {
+   if(@init_args) {
+       *syscall_init = sub { syscall $init, 0 };
+   } else {
+       *syscall_init = sub { syscall $init };
    }
-   else {
-      # that's my favourite syscall:
-      syscall $syscall_init{$arch} + 5, @_;
-   }
+   *syscall_add_watch = sub { syscall $add,    @_ };
+   *syscall_rm_watch  = sub { syscall $remove, @_ };
 }
 
 sub new {
