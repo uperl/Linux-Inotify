@@ -1,4 +1,6 @@
+  - Add support for aarch64 (ARM 64 bit)
   - Add support for 32 bit Intel where archname is 486 or later
+  - Restore suport for Perl 5.6
 
 2007-09-19  Torsten Werner <twerner@debian.org>
 
