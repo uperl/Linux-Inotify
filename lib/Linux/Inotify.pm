@@ -165,27 +165,25 @@ sub close {
    croak "Linux::Inotify::close() failed: $!" unless defined $ret;
 }
 
-use constant {
-   ACCESS        => 0x00000001,
-   MODIFY        => 0x00000002,
-   ATTRIB        => 0x00000004,
-   CLOSE_WRITE   => 0x00000008,
-   CLOSE_NOWRITE => 0x00000010,
-   OPEN          => 0x00000020,
-   MOVED_FROM    => 0x00000040,
-   MOVED_TO      => 0x00000080,
-   CREATE        => 0x00000100,
-   DELETE        => 0x00000200,
-   DELETE_SELF   => 0x00000400,
-   UNMOUNT       => 0x00002000,
-   Q_OVERFLOW    => 0x00004000,
-   IGNORED       => 0x00008000,
-   ISDIR         => 0x40000000,
-   ONESHOT       => 0x80000000,
-   CLOSE         => 0x00000018,
-   MOVE          => 0x000000c0,
-   ALL_EVENTS    => 0x00000fff
-};
+use constant ACCESS        => 0x00000001;
+use constant MODIFY        => 0x00000002;
+use constant ATTRIB        => 0x00000004;
+use constant CLOSE_WRITE   => 0x00000008;
+use constant CLOSE_NOWRITE => 0x00000010;
+use constant OPEN          => 0x00000020;
+use constant MOVED_FROM    => 0x00000040;
+use constant MOVED_TO      => 0x00000080;
+use constant CREATE        => 0x00000100;
+use constant DELETE        => 0x00000200;
+use constant DELETE_SELF   => 0x00000400;
+use constant UNMOUNT       => 0x00002000;
+use constant Q_OVERFLOW    => 0x00004000;
+use constant IGNORED       => 0x00008000;
+use constant ISDIR         => 0x40000000;
+use constant ONESHOT       => 0x80000000;
+use constant CLOSE         => 0x00000018;
+use constant MOVE          => 0x000000c0;
+use constant ALL_EVENTS    => 0x00000fff;
 
 sub read {
    my $self = shift;
