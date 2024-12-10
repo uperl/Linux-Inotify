@@ -1,3 +1,5 @@
+  - Add support for 32 bit Intel where archname is 486 or later
+
 2007-09-19  Torsten Werner <twerner@debian.org>
 
 	* version 0.05
@@ -7,7 +9,7 @@
 
 	* version 0.04
 	* portable to non i386 architectures
-	
+
 2005-08-15  Torsten Werner <twerner@debian.org>
 
 	* version 0.03
