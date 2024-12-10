@@ -94,6 +94,7 @@ use POSIX;
 use Config;
 
 my %syscall_init = (
+   aarch64   => 26,
    alpha     => 444,
    arm       => 316,
    i386      => 291,
@@ -113,7 +114,10 @@ my ($arch) = ($Config{archname} =~ m{([^-]+)-});
 die "unsupported architecture: $arch\n" unless exists $syscall_init{$arch};
 
 sub syscall_init {
-   syscall $syscall_init{$arch};
+   # some newer Linux do not have inotify_init, and just inotify_init1
+   # which takes a single argument.  inotify_init1(0) is the same as
+   # inotify_init().
+   syscall $syscall_init{$arch}, 0;
 }
 
 sub syscall_add_watch {
