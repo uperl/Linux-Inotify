@@ -140,11 +140,9 @@ if(my($init, $add, $remove, @init_args) = _arch_config()) {
 
 sub new {
    my $class = shift;
-   my $self = {
-      fd => syscall_init
-   };
-   croak "Linux::Inotify::init() failed: $!" if $self->{fd} == -1;
-   return bless $self, $class;
+   my $fd = syscall_init();
+   croak "Linux::Inotify::init() failed: $!" if $fd == -1;
+   return bless { fd => $fd }, $class;
 }
 
 sub add_watch {

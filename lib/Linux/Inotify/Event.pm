@@ -2,6 +2,7 @@ package Linux::Inotify::Event;
 
 use strict;
 use warnings;
+use Linux::Inotify;
 
 sub new {
    my $class = shift;
@@ -12,7 +13,6 @@ sub new {
       unpack 'iIII', $raw_event;
    $self->{watch} = $notifier->find($wd);
    $self->{name} = unpack 'Z*', substr($raw_event, 16, $self->{len});
-   use Linux::Inotify;
    if ($self->{mask} & Linux::Inotify::DELETE_SELF) {
       $self->{watch}->invalidate();
    }
@@ -47,10 +47,8 @@ my %reverse = (
 );
 my %reverse_copy = %reverse;
 while(my ($key, $value) = each %reverse_copy) {
-   require Linux::Inotify;
    $reverse{Linux::Inotify::ISDIR | $key} = "isdir | $value";
 }
-
 
 sub print {
    my $self = shift;
