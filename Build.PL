@@ -1,4 +1,11 @@
+use strict;
+use warnings;
 use Module::Build;
+
+if($^O ne 'linux') {
+    print "OS not supported\n";
+    exit;
+}
 
 my $build = new Module::Build
  (
