@@ -86,7 +86,6 @@ under the same license as perl: L<perlgpl> or L<perlartistic>.
 
 =cut
 
-
 use strict;
 use warnings;
 use Carp;
@@ -134,7 +133,7 @@ sub syscall_rm_watch {
    }
 }
 
-sub new($) {
+sub new {
    my $class = shift;
    my $self = {
       fd => syscall_init
@@ -143,21 +142,21 @@ sub new($) {
    return bless $self, $class;
 }
 
-sub add_watch($$$) {
+sub add_watch {
    my $self = shift;
-   use Linux::Inotify::Watch;
+   require Linux::Inotify::Watch;
    my $watch = Linux::Inotify::Watch->new($self, @_);
    $self->{wd}->{$watch->{wd}} = $watch;
    return $watch;
 }
 
-sub find($$) {
+sub find {
    my $self = shift;
    my $wd = shift;
    return $self->{wd}->{$wd};
 }
 
-sub close($) {
+sub close {
    my $self = shift;
    for my $watch (values %{$self->{wd}}) {
       $watch->remove;
@@ -188,13 +187,13 @@ use constant {
    ALL_EVENTS    => 0x00000fff
 };
 
-sub read($) {
+sub read {
    my $self = shift;
    my $bytes = POSIX::read($self->{fd}, my $raw_events, 65536);
    croak "Linux::Inotify::read: read only $bytes bytes: $!" if $bytes < 16;
    my @all_events;
    do {
-      use Linux::Inotify::Event;
+      require Linux::Inotify::Event;
       my $event = Linux::Inotify::Event->new($self, $raw_events);
       push @all_events, $event;
       $raw_events = substr($raw_events, 16 + $event->{len});
@@ -203,4 +202,3 @@ sub read($) {
 }
 
 1;
-
