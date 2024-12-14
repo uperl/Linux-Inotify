@@ -45,7 +45,7 @@ destroys the notifier and closes the associated file descriptor.
 =head2 class Linux::Inotify::Watch
 
 The constructor new is usually not called directly but via the add_watch method
-of the notifier. An alternative contructor
+of the notifier. An alternative constructor.
 
  my $watch_clone = $watch->clone('filename');
 

@@ -4,6 +4,9 @@ use strict;
 use warnings;
 use Carp;
 
+# ABSTRACT: Watch class for Linux::Inotify
+# VERSION
+
 our @CARP_NOT = ('Linux::Inotify');
 
 sub new {
