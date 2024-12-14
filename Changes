@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.06      2024-12-13 17:25:43 -0700
   - New maintainer, and new repository https://github.com/uperl/Linux-Inotify
   - Add support for aarch64 (ARM 64 bit)
   - Add support for 32 bit Intel where archname is 486 or later
