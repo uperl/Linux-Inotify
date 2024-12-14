@@ -9,13 +9,11 @@ use Config;
 # ABSTRACT: Classes for supporting inotify in Linux Kernel >= 2.6.13
 # VERSION
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Linux::Inotify supports the new inotify interface of Linux which is a
 replacement of dnotify. Beside the class Linux::Inotify there two helper
 classes -- Linux::Inotify::Watch and Linux::Inotify::Event.
-
-=head1 DESCRIPTION
 
 =head2 class Linux::Inotify
 
