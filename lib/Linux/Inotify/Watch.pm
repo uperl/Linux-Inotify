@@ -50,9 +50,9 @@ sub remove {
       $self->invalidate;
       require Linux::Inotify;
       my $ret = Linux::Inotify::syscall_rm_watch($self->{notifier}->{fd},
-	 $self->{wd});
+         $self->{wd});
       croak "Linux::Inotify::Watch::remove(wd = $self->{wd}) failed: $!" if
-	 $ret == -1;
+         $ret == -1;
    }
 }
 

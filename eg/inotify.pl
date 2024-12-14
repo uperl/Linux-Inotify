@@ -25,8 +25,8 @@ for(1..20) {
       # recurse into subdirs
       if ($ARG->{mask} & Linux::Inotify::ISDIR && \
           $ARG->{mask} & Linux::Inotify::CREATE) {
-	 my $watch = $ARG->add_watch();
-	 push(@watches, $watch);
+         my $watch = $ARG->add_watch();
+         push(@watches, $watch);
       }
    }
 }
