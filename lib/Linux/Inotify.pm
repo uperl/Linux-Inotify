@@ -1,11 +1,13 @@
 package Linux::Inotify;
-our $VERSION = '0.05';
 
-=pod
+use strict;
+use warnings;
+use Carp;
+use POSIX;
+use Config;
 
-=head1 NAME
-
-Linux::Inotify - Classes for supporting inotify in Linux Kernel >= 2.6.13
+# ABSTRACT: Classes for supporting inotify in Linux Kernel >= 2.6.13
+# VERSION
 
 =head1 SYNOPSIS
 
@@ -19,24 +21,24 @@ classes -- Linux::Inotify::Watch and Linux::Inotify::Event.
 
 The following code
 
-   use Linux::Inotify;
-   my $notifier = Linux::Inotify->new();
+ use Linux::Inotify;
+ my $notifier = Linux::Inotify->new();
 
 returns a new notifier.
 
-   my $watch = $notifier->add_watch('filename', Linux::Inotify::MASK);
+ my $watch = $notifier->add_watch('filename', Linux::Inotify::MASK);
 
 adds a watch to filename (see below), where MASK is one of ACCESS, MODIFY,
 ATTRIB, CLOSE_WRITE, CLOSE_NOWRITE, OPEN, MOVED_FROM, MOVED_TO, CREATE, DELETE,
 DELETE_SELF, UNMOUNT, Q_OVERFLOW, IGNORED, ISDIR, ONESHOT, CLOSE, MOVE or
 ALL_EVENTS.
 
-   my @events = $notifier->read();
+ my @events = $notifier->read();
 
 reads and decodes all available data and returns an array of
 Linux::Inotify::Event objects (see below).
 
-   $notifier->close();
+ $notifier->close();
 
 destroys the notifier and closes the associated file descriptor.
 
@@ -45,13 +47,13 @@ destroys the notifier and closes the associated file descriptor.
 The constructor new is usually not called directly but via the add_watch method
 of the notifier. An alternative contructor
 
-   my $watch_clone = $watch->clone('filename');
+ my $watch_clone = $watch->clone('filename');
 
 creates an new watch for filename but shares the same $notifier and MASK. This
 is indirectly used for recursing into subdirectories (see below). The
 destructor
 
-   $watch->remove()
+ $watch->remove()
 
 destroys the watch safely. It does not matter if the kernel has already removed
 the watch itself, which may happen when the watched object has been deleted.
@@ -63,34 +65,23 @@ Linux::Inotify that returns an array of event objects.  An
 Linux::Inotify::Event object has some interesting data members: mask, cookie
 and name. The method
 
-   $event->fullname();
+ $event->fullname();
 
 returns the full name of the file or directory not only the name relative to
 the watch like the name member does contain.
 
-   $event->print();
+ $event->print();
 
 prints the event to stdout in a human readable form.
 
-   my $new_watch = $event->add_watch();
+ my $new_watch = $event->add_watch();
 
 creates a new watch for the file/directory of the event and shares the notifier
 and MASK of the original watch, that has generated the event. That is useful
 for recursing into subdirectories.
 
-
-=head1 AUTHOR
-
-Copyright 2005 by Torsten Werner <twerner@debian.org>. The code is licensed
-under the same license as perl: L<perlgpl> or L<perlartistic>.
-
 =cut
 
-use strict;
-use warnings;
-use Carp;
-use POSIX;
-use Config;
 use constant ACCESS        => 0x00000001;
 use constant MODIFY        => 0x00000002;
 use constant ATTRIB        => 0x00000004;
