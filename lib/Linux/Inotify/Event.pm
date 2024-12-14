@@ -4,6 +4,9 @@ use strict;
 use warnings;
 use Linux::Inotify;
 
+# ABSTRACT: Event class for Linux::Inotify
+# VERSION
+
 sub new {
    my $class = shift;
    my $notifier = shift;
