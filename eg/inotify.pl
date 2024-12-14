@@ -3,7 +3,6 @@
 use strict;
 use warnings;
 use Carp;
-use English;
 use Linux::Inotify;
 
 if (@ARGV == 0) {
